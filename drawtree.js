@@ -71,7 +71,7 @@ class Tree {
 function parse(reader, depth = -1) {
     let root = new Tree(depth);
 
-    if (!reader.hasNext() || depth > 5) { return root; }
+    if (!reader.hasNext()) { return root; }
 
     // Node content.
     if (reader.curItem().depth == depth) {
