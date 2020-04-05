@@ -2,6 +2,7 @@
 
 <head>
     <title>DrawTree by Achoum</title>
+    <meta charset="UTF-8">
 
     <!-- Bootstrap -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -12,6 +13,16 @@
 
     <script>
         function onLoad() {
+
+            // Set available styles.
+            let style = document.getElementById("style");
+            for (const key in STYLES) {
+                let item = document.createElement("option");
+                item.appendChild(document.createTextNode(key));
+                item.value = key;
+                style.appendChild(item);
+            }
+            style.onchange = update;
 
             // Callbacks.
             raw_text().onkeydown = function(event) {
@@ -44,6 +55,13 @@
 
             // For some reason, bootstrap's "oninput" is not called on the pre.
             update();
+
+            // Clear action.
+            document.getElementById("clear").onclick = function() {
+                raw_text().value = "";
+                update();
+            };
+
         }
 
         function raw_text() {
@@ -56,7 +74,10 @@
 
         // Update the display with the formatted tree structure.
         function update() {
-            formatted_text().innerText = drawTree(raw_text().value);
+            const style_dom = document.getElementById("style");
+            const style_key = style_dom.options[style_dom.selectedIndex].value;
+            const style = STYLES[style_key];
+            formatted_text().innerText = drawTree(raw_text().value, style);
         }
 
         // Insert "item" at the cursor position in the "field" text area.
@@ -92,11 +113,21 @@
         <div class="row">
             <div class="col-xs-6">
                 <h2>Raw</h2>
+                <div class="form-group">
+                    <button id="clear" class="btn btn-default" type="submit">Clear</button>
+                </div>
                 <textarea class="form-control" id="raw_text" rows="20" style="font-family:monospace;">
                 </textarea>
             </div>
             <div class="col-xs-6">
                 <h2>Formatted</h2>
+                <form class="form-inline">
+                    <div class="form-group">
+                        <label for="style" class="control-label">Style</label>
+                        <select class="form-control" id="style">
+                        </select>
+                    </div>
+                </form>
                 <pre id="formatted_text"></pre>
             </div>
         </div>

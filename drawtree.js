@@ -12,6 +12,16 @@ class DisplayStyle {
 // Basic display style. Used by default.
 const BASIC_STYLE = new DisplayStyle( /*connector =*/ "+", /*final_connector =*/ "+", /*vertical =*/ "|", /*horizontal =*/ "--");
 
+const BOX_LIGHT_DRAWING_STYLE = new DisplayStyle( /*connector =*/ "├", /*final_connector =*/ "└", /*vertical =*/ "│", /*horizontal =*/ "─");
+
+const BOX_DOUBLE_DRAWING_STYLE = new DisplayStyle( /*connector =*/ "╠", /*final_connector =*/ "╚", /*vertical =*/ "║", /*horizontal =*/ "═ ");
+
+const STYLES = {
+    "Basic": BASIC_STYLE,
+    "Light box": BOX_LIGHT_DRAWING_STYLE,
+    "Double box": BOX_DOUBLE_DRAWING_STYLE,
+};
+
 // Generates a pretty string representation of a tree defined with tabulated items.
 function drawTree(raw, style = BASIC_STYLE) {
     const items = lexe(raw);
@@ -88,14 +98,23 @@ function parse(reader, depth = -1) {
 }
 
 // Converts a tree structure into a user readable representation.
-function displayTree(root, style, is_last_child, prefix = "") {
+function displayTree(root, style, is_last_child, prefix = "", shift = 2) {
+    const shift_space = " ".repeat(shift);
 
     // The node value.
     let formatted = "";
+    let child_shift = 0;
     if (root.value !== null) {
+        if (root.value.length <= 1) {
+            child_shift = 0;
+        } else if (root.value.length <= 2) {
+            child_shift = 1;
+        } else {
+            child_shift = 2;
+        }
         formatted += prefix;
         if (root.depth > 0) {
-            formatted += "  " + (is_last_child ? style.final_connector : style.connector) + style.horizontal;
+            formatted += shift_space + (is_last_child ? style.final_connector : style.connector) + style.horizontal;
         }
         formatted += root.value + "\n";
     }
@@ -108,20 +127,20 @@ function displayTree(root, style, is_last_child, prefix = "") {
         sub_prefix = "";
     } else
     if (!is_last_child) {
-        sub_prefix = prefix + "  " + style.vertical + "  ";
+        sub_prefix = prefix + shift_space + style.vertical + "  ";
     } else {
-        sub_prefix = prefix + "     ";
+        sub_prefix = prefix + shift_space + "   ";
     }
 
     // Connection to children.
     if (root.depth >= 0) {
-        formatted += sub_prefix + "  " + style.vertical + "\n";
+        formatted += sub_prefix + " ".repeat(child_shift) + style.vertical + "\n";
     }
 
     // The children.
     for (const child_idx in root.children) {
         const sub_is_last_child = child_idx == root.children.length - 1;
-        formatted += displayTree(root.children[child_idx], style, sub_is_last_child, sub_prefix);
+        formatted += displayTree(root.children[child_idx], style, sub_is_last_child, sub_prefix, child_shift);
     }
     return formatted;
 }
@@ -146,4 +165,4 @@ function numTabs(value) {
     } else { return [0, value]; }
 }
 
-module.exports = { drawTree };
+module.exports = { drawTree, STYLES };
