@@ -1,20 +1,21 @@
 // How to display the tree.
 class DisplayStyle {
 
-    constructor(connector, final_connector, vertical, horizontal) {
+    constructor(connector, final_connector, vertical, horizontal, shift) {
         this.connector = connector;
         this.final_connector = final_connector;
         this.vertical = vertical;
         this.horizontal = horizontal;
+        this.shift = shift;
     }
 }
 
 // Basic display style. Used by default.
-const BASIC_STYLE = new DisplayStyle( /*connector =*/ "+", /*final_connector =*/ "+", /*vertical =*/ "|", /*horizontal =*/ "--");
+const BASIC_STYLE = new DisplayStyle( /*connector =*/ "+", /*final_connector =*/ "+", /*vertical =*/ "|", /*horizontal =*/ "--", /*shift =*/ 2);
 
-const BOX_LIGHT_DRAWING_STYLE = new DisplayStyle( /*connector =*/ "├", /*final_connector =*/ "└", /*vertical =*/ "│", /*horizontal =*/ "─");
+const BOX_LIGHT_DRAWING_STYLE = new DisplayStyle( /*connector =*/ "├", /*final_connector =*/ "└", /*vertical =*/ "│", /*horizontal =*/ "─", /*shift =*/ 2);
 
-const BOX_DOUBLE_DRAWING_STYLE = new DisplayStyle( /*connector =*/ "╠", /*final_connector =*/ "╚", /*vertical =*/ "║", /*horizontal =*/ "═ ");
+const BOX_DOUBLE_DRAWING_STYLE = new DisplayStyle( /*connector =*/ "╠", /*final_connector =*/ "╚", /*vertical =*/ "║", /*horizontal =*/ "═ ", /*shift =*/ 2);
 
 const STYLES = {
     "Basic": BASIC_STYLE,
@@ -110,7 +111,7 @@ function displayTree(root, style, is_last_child, prefix = "", shift = 2) {
         } else if (root.value.length <= 2) {
             child_shift = 1;
         } else {
-            child_shift = 2;
+            child_shift = style.shift;
         }
         formatted += prefix;
         if (root.depth > 0) {
